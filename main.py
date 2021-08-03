@@ -1,5 +1,5 @@
 #!/bin/python3
-from bluepy.btle import Peripheral, ADDR_TYPE_PUBLIC
+from bluepy.btle import Peripheral, ADDR_TYPE_PUBLIC, BTLEDisconnectError
 import threading
 import time
 import colorsys
@@ -11,7 +11,10 @@ dev = None
 def verify_connection():
   global dev
   while dev == None or dev.getState() == 'disc':
-    dev = Peripheral(mac, ADDR_TYPE_PUBLIC)
+    try:
+      dev = Peripheral(mac, ADDR_TYPE_PUBLIC)
+    except BTLEDisconnectError as e:
+      continue
 
 verify_connection()
 print("connected")
