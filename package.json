@@ -1,0 +1,23 @@
+{
+	"name": "homebridge-beken",
+	"version": "0.1.0",
+	"description": "homebridge beken led plugin",
+	"main": "index.js",
+	"repository": "git@pipeframe.xyz:lonkaars/beken-homebridge",
+	"author": "lonkaars <loek@pipeframe.xyz>",
+	"license": "MIT",
+	"private": false,
+	"type": "module",
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {
+		"@abandonware/noble": "^1.9.2-14",
+		"color": "^4.0.0",
+		"homebridge": "^1.3.4"
+	},
+	"devDependencies": {
+		"@types/node": "^16.4.10",
+		"typescript": "^4.3.5"
+	}
+}
