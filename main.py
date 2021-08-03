@@ -1,12 +1,20 @@
 #!/bin/python3
 from bluepy.btle import Peripheral, ADDR_TYPE_PUBLIC
+import threading
 import time
 import colorsys
 import sys
 
-lampmac = sys.argv[1]
+mac = sys.argv[1]
+dev = None
 
-dev = Peripheral(lampmac, ADDR_TYPE_PUBLIC)
+def verify_connection():
+  global dev
+  while dev == None or dev.getState() == 'disc':
+    dev = Peripheral(mac, ADDR_TYPE_PUBLIC)
+
+verify_connection()
+print("connected")
 
 def makemsg(r, g, b, l=0):
   return bytes([
@@ -17,7 +25,17 @@ def makemsg(r, g, b, l=0):
     int(l > 0), l,
   ])
 
+messages = []
+def thread_func():
+  while True:
+    if len(messages) < 1: continue
+    message = messages.pop(0)
+    verify_connection()
+    dev.writeCharacteristic(0x002A, message)
+
+threading.Thread(target=thread_func).start()
+
 for line in sys.stdin:
   r, g, b, l = [ int(x, 16) for x in [ line.strip()[i:i+2] for i in range(0, 8, 2) ] ]
-  dev.writeCharacteristic(0x002A, makemsg(r, g, b, l))
+  messages.append(makemsg(r, g, b, l))
 
