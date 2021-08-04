@@ -5,11 +5,13 @@
 		"target": "ESNext",
 		"module": "ESNext",
 		"inlineSources": true,
-		"inlineSourceMap": true
+		"inlineSourceMap": true,
+		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [ "node_modules" ],
 	"files": [
 		"./index.ts",
-		"./plugin.ts"
+		"./plugin.ts",
+    "./lamp.ts"
 	]
 }

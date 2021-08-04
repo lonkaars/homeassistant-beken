@@ -7,6 +7,7 @@ import sys
 
 mac = sys.argv[1]
 dev = None
+messages = []
 
 def verify_connection():
   global dev
@@ -15,9 +16,6 @@ def verify_connection():
       dev = Peripheral(mac, ADDR_TYPE_PUBLIC)
     except BTLEDisconnectError as e:
       continue
-
-verify_connection()
-print("connected")
 
 def makemsg(r, g, b, l=0):
   return bytes([
@@ -28,17 +26,24 @@ def makemsg(r, g, b, l=0):
     int(l > 0), l,
   ])
 
-messages = []
-def thread_func():
+def keep_alive():
   while True:
-    if len(messages) < 1: continue
-    message = messages.pop(0)
-    verify_connection()
-    dev.writeCharacteristic(0x002A, message)
+    global messages
+    messages.append((0x0001, bytes(10)))
+    time.sleep(10)
 
-threading.Thread(target=thread_func).start()
+def user_input():
+  for line in sys.stdin:
+    r, g, b, l = [ int(x, 16) for x in [ line.strip()[i:i+2] for i in range(0, 8, 2) ] ]
+    messages.append((0x002a, makemsg(r, g, b, l)))
 
-for line in sys.stdin:
-  r, g, b, l = [ int(x, 16) for x in [ line.strip()[i:i+2] for i in range(0, 8, 2) ] ]
-  messages.append(makemsg(r, g, b, l))
+threading.Thread(target=keep_alive).start()
+threading.Thread(target=user_input).start()
+
+verify_connection()
+while True:
+  if len(messages) < 1: continue
+  message = messages.pop(0)
+  verify_connection()
+  dev.writeCharacteristic(message[0], bytearray(message[1]))
 
