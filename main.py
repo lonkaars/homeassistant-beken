@@ -2,7 +2,6 @@
 from bluepy.btle import Peripheral, ADDR_TYPE_PUBLIC, BTLEDisconnectError
 import threading
 import time
-import colorsys
 import sys
 
 mac = sys.argv[1]

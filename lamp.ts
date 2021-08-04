@@ -7,7 +7,7 @@ export default class Lamp {
 	private subpr: ChildProcess;
 
 	constructor(public addr: string) {
-		this.subpr = spawn('python3', ['./main.py', addr]);
+		this.subpr = spawn('./venv/bin/python3', ['./main.py', addr]);
 	}
 
 	set color(newColor: LampColor) {
@@ -23,3 +23,4 @@ export default class Lamp {
 		return this.color.map(i => i.toString(16).padStart(2, '0')).join('');
 	}
 }
+
