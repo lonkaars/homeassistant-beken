@@ -2,11 +2,13 @@
 	"compilerOptions": {
 		"moduleResolution": "node",
 		"pretty": false,
-		"target": "ESNext",
-		"module": "ESNext",
+		"target": "esnext",
+		"module": "commonjs",
 		"inlineSources": true,
 		"inlineSourceMap": true,
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
+		"rootDir": "."
 	},
 	"exclude": [ "node_modules" ],
 	"files": [
