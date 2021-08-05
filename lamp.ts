@@ -7,6 +7,7 @@ export type LampColor = [number, number, number, number];
 export default class Lamp {
 	#color: LampColor;
 	private subpr: ChildProcess;
+	private last: string;
 
 	constructor(public addr: string, public log: Logger) {
 		this.subpr = spawn(join(__dirname, '/venv/bin/python3'), [join(__dirname, './main.py'), addr]);
@@ -18,7 +19,11 @@ export default class Lamp {
 
 	set color(newColor: LampColor) {
 		this.#color = newColor.map(c => Math.floor(c)) as LampColor;
-		this.subpr.stdin.write(this.colorToString() + '\n');
+		var message = this.colorToString();
+		if (this.last == message) return; // prevent duplicate messages
+		this.log.info(message);
+		this.subpr.stdin.write(message + '\n');
+		this.last = message;
 	}
 
 	get color() {

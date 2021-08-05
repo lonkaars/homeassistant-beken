@@ -34,12 +34,12 @@ export default class BekenBridge implements AccessoryPlugin {
 
 		this.whiteState = {
 			on: false,
-			brt: 0,
+			brt: 100,
 		};
 
 		this.rgbState = {
 			on: false,
-			brt: 0,
+			brt: 100,
 			sat: 0,
 			hue: 0,
 		};
@@ -56,48 +56,58 @@ export default class BekenBridge implements AccessoryPlugin {
 	}
 
 	registerWhiteBulbServices() {
+		var setOn = (on: boolean) => {
+			this.whiteState.on = on;
+			if (this.rgbState.on) {
+				this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
+			}
+		};
 		this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.On)
 			.onGet(() => this.whiteState.on)
 			.onSet((on: boolean) => {
-				this.whiteState.on = on;
-				if (this.rgbState.on) {
-					this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
-				}
+				setOn(on);
 				this.updateLamp();
 			});
 		this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.Brightness)
 			.onGet(() => this.whiteState.brt)
 			.onSet((brt: number) => {
+				setOn(true);
 				this.whiteState.brt = brt;
 				this.updateLamp();
 			});
 	}
 
 	registerRGBBulbServices() {
+		var setOn = (on: boolean) => {
+			this.rgbState.on = on;
+			if (this.whiteState.on) {
+				this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
+			}
+		};
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.On)
 			.onGet(() => this.rgbState.on)
 			.onSet((on: boolean) => {
-				this.rgbState.on = on;
-				if (this.whiteState.on) {
-					this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
-				}
+				setOn(on);
 				this.updateLamp();
 			});
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.Brightness)
 			.onGet(() => this.rgbState.brt)
 			.onSet((brt: number) => {
+				setOn(true);
 				this.rgbState.brt = brt;
 				this.updateLamp();
 			});
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.Hue)
 			.onGet(() => this.rgbState.hue)
 			.onSet((hue: number) => {
+				setOn(true);
 				this.rgbState.hue = hue;
 				this.updateLamp();
 			});
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.Saturation)
 			.onGet(() => this.rgbState.sat)
 			.onSet((sat: number) => {
+				setOn(true);
 				this.rgbState.sat = sat;
 				this.updateLamp();
 			});
