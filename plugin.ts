@@ -1,6 +1,6 @@
 import { AccessoryConfig, AccessoryPlugin, API, Logger, Service } from 'homebridge';
 
-import Lamp, { LampColor } from './lamp';
+import Lamp from './lamp';
 const Color = require('color');
 
 export default class BekenBridge implements AccessoryPlugin {
@@ -10,16 +10,12 @@ export default class BekenBridge implements AccessoryPlugin {
 	private whiteBulbService: Service;
 	private RGBBulbService: Service;
 
-	private whiteState: {
-		brt: number;
+	private state: {
 		on: boolean;
-	};
-
-	private rgbState: {
+		brightness: number;
+		lamp: 'white' | 'rgb';
+		saturation: number;
 		hue: number;
-		sat: number;
-		brt: number;
-		on: boolean;
 	};
 
 	public name: string;
@@ -32,15 +28,11 @@ export default class BekenBridge implements AccessoryPlugin {
 		this.name = config.name;
 		this.lamp = new Lamp(config.address, log);
 
-		this.whiteState = {
+		this.state = {
 			on: false,
-			brt: 100,
-		};
-
-		this.rgbState = {
-			on: false,
-			brt: 100,
-			sat: 0,
+			brightness: 100,
+			lamp: 'white',
+			saturation: 0,
 			hue: 0,
 		};
 
@@ -56,72 +48,73 @@ export default class BekenBridge implements AccessoryPlugin {
 	}
 
 	registerWhiteBulbServices() {
-		var setOn = (on: boolean) => {
-			this.whiteState.on = on;
-			if (this.rgbState.on) {
+		var done = () => {
+			if (this.state.lamp == 'rgb') {
 				this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
 			}
+			this.state.lamp = 'white';
+			this.updateLamp();
 		};
 		this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.On)
-			.onGet(() => this.whiteState.on)
+			.onGet(() => this.state.on && this.state.lamp == 'white')
 			.onSet((on: boolean) => {
-				setOn(on);
-				this.updateLamp();
+				this.state.on = on;
+				done();
 			});
 		this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.Brightness)
-			.onGet(() => this.whiteState.brt)
+			.onGet(() => this.state.brightness && this.state.lamp == 'white')
 			.onSet((brt: number) => {
-				setOn(true);
-				this.whiteState.brt = brt;
-				this.updateLamp();
+				this.state.brightness = brt;
+				done();
 			});
 	}
 
 	registerRGBBulbServices() {
-		var setOn = (on: boolean) => {
-			this.rgbState.on = on;
-			if (this.whiteState.on) {
+		var done = () => {
+			if (this.state.lamp == 'white') {
 				this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
 			}
+			this.state.lamp = 'rgb';
+			this.updateLamp();
 		};
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.On)
-			.onGet(() => this.rgbState.on)
+			.onGet(() => this.state.on && this.state.lamp == 'rgb')
 			.onSet((on: boolean) => {
-				setOn(on);
-				this.updateLamp();
+				this.state.on = on;
+				done();
 			});
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.Brightness)
-			.onGet(() => this.rgbState.brt)
+			.onGet(() => this.state.brightness && this.state.lamp == 'rgb')
 			.onSet((brt: number) => {
-				setOn(true);
-				this.rgbState.brt = brt;
-				this.updateLamp();
+				this.state.brightness = brt;
+				done();
 			});
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.Hue)
-			.onGet(() => this.rgbState.hue)
+			.onGet(() => this.state.hue)
 			.onSet((hue: number) => {
-				setOn(true);
-				this.rgbState.hue = hue;
-				this.updateLamp();
+				this.state.hue = hue;
+				done();
 			});
 		this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.Saturation)
-			.onGet(() => this.rgbState.sat)
+			.onGet(() => this.state.saturation)
 			.onSet((sat: number) => {
-				setOn(true);
-				this.rgbState.sat = sat;
-				this.updateLamp();
+				this.state.saturation = sat;
+				done();
 			});
 	}
 
 	updateLamp() {
-		if (this.rgbState.on) {
-			var rgb = Color({ h: this.rgbState.hue, s: this.rgbState.sat, v: this.rgbState.brt });
-			this.lamp.color = [rgb.red(), rgb.green(), rgb.blue(), 0];
-		} else if (this.whiteState.on) {
-			var value = Math.floor(this.whiteState.brt / 100 * 255);
-			this.lamp.color = [0, 0, 0, value];
-		} else {
-			this.lamp.color = [0, 0, 0, 0];
+		switch (this.state.lamp) {
+			case 'rgb': {
+				var rgb = Color({ h: this.state.hue, s: this.state.saturation, v: this.state.brightness });
+				this.lamp.color = [rgb.red(), rgb.green(), rgb.blue(), 0];
+				break;
+			}
+			case 'white': {
+				var value = Math.floor(this.state.brightness / 100 * 255);
+				this.lamp.color = [0, 0, 0, value];
+				break;
+			}
 		}
 	}
 

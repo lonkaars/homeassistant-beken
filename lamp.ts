@@ -21,7 +21,6 @@ export default class Lamp {
 		this.#color = newColor.map(c => Math.floor(c)) as LampColor;
 		var message = this.colorToString();
 		if (this.last == message) return; // prevent duplicate messages
-		this.log.info(message);
 		this.subpr.stdin.write(message + '\n');
 		this.last = message;
 	}
