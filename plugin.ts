@@ -104,6 +104,10 @@ export default class BekenBridge implements AccessoryPlugin {
 	}
 
 	updateLamp() {
+		if (!this.state.on) {
+			this.lamp.color = [0, 0, 0, 0];
+			return;
+		}
 		switch (this.state.lamp) {
 			case 'rgb': {
 				var rgb = Color({ h: this.state.hue, s: this.state.saturation, v: this.state.brightness });
