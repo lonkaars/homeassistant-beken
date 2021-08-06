@@ -18,7 +18,8 @@
 	"scripts": {
 		"build": "tsc",
 		"python": "python3 -m venv venv && venv/bin/pip3 install -r requirements.txt",
-		"perms": "sudo setcap 'cap_net_raw,cap_net_admin+eip' venv/lib/python3.9/site-packages/bluepy/bluepy-helper"
+		"perms": "sudo setcap 'cap_net_raw,cap_net_admin+eip' venv/lib/python3.9/site-packages/bluepy/bluepy-helper",
+		"postinstall": "sh ./install.sh"
 	},
 	"dependencies": {
 		"@abandonware/noble": "^1.9.2-14",
