@@ -98,7 +98,6 @@ export default class BekenBridge implements AccessoryPlugin {
 	}
 
 	updateLamp() {
-		this.log.info(JSON.stringify(this.state, null, 2));
 		if (!this.state.on) {
 			this.lamp.color = [0, 0, 0, 0];
 			return;
