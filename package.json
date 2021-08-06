@@ -3,11 +3,14 @@
 	"name": "homebridge-beken",
 	"version": "0.1.0",
 	"description": "homebridge beken led plugin",
-	"repository": "git@pipeframe.xyz:lonkaars/beken-homebridge",
 	"author": "lonkaars <loek@pipeframe.xyz>",
 	"license": "MIT",
 	"private": false,
 	"main": "./index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/lonkaars/homebridge-beken"
+	},
 	"keywords": [
 		"homebridge-plugin"
 	],
