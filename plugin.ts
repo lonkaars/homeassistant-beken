@@ -49,9 +49,6 @@ export default class BekenBridge implements AccessoryPlugin {
 
 	registerWhiteBulbServices() {
 		var done = () => {
-			if (this.state.lamp == 'rgb') {
-				this.RGBBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
-			}
 			this.state.lamp = 'white';
 			this.updateLamp();
 		};
@@ -71,9 +68,6 @@ export default class BekenBridge implements AccessoryPlugin {
 
 	registerRGBBulbServices() {
 		var done = () => {
-			if (this.state.lamp == 'white') {
-				this.whiteBulbService.getCharacteristic(this.api.hap.Characteristic.On).setValue(false);
-			}
 			this.state.lamp = 'rgb';
 			this.updateLamp();
 		};
@@ -104,6 +98,7 @@ export default class BekenBridge implements AccessoryPlugin {
 	}
 
 	updateLamp() {
+		this.log.info(JSON.stringify(this.state, null, 2));
 		if (!this.state.on) {
 			this.lamp.color = [0, 0, 0, 0];
 			return;
