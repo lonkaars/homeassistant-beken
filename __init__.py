@@ -1,5 +1,11 @@
-DOMAIN = "beken"
+from homeassistant.core import HomeAssistant
 
-def setup(hass, config):
-  hass.states.set("beken.loaded", "yes")
+DOMAIN = "beken"
+PLATFORMS = ["light"]
+
+def setup(hass: HomeAssistant, config):
+  hass.data[DOMAIN] = {}
+  return True
+
+def setup_entry(hass, entry):
   return True
