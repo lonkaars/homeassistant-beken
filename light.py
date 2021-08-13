@@ -1,7 +1,8 @@
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+from math import floor
 from homeassistant.const import CONF_MAC
-from .driver import BekenConnection, makemsg
+from .driver import BekenConnection, makemsg, BEKEN_CHARACTERISTIC_LAMP
 from homeassistant.components.light import (
   LightEntity,
 
@@ -33,7 +34,10 @@ class BekenLight(LightEntity):
     self._address = kwargs["address"]
     self._on = False
     self._brightness = 255
-    self._rgbw = (255, 255, 255, 255) # r, g, b, w
+    self._rgb = (255, 255, 255)
+    self._w = 255
+    self._connection = BekenConnection(self._address)
+    self._connection.start_threads()
 
   @property
   def color_mode(self):
@@ -65,12 +69,30 @@ class BekenLight(LightEntity):
 
   @property
   def rgbw_color(self):
-    return self._rgbw
+    return self._rgb + (self._w,)
 
   def turn_on(self, **kwargs):
     self._on = True
-    self._brightness = kwargs.get(ATTR_BRIGHTNESS)
-    self._rgbw = kwargs.get(ATTR_RGBW_COLOR)
+
+    brightness = kwargs.get(ATTR_BRIGHTNESS)
+    if brightness != None:
+      self._brightness = brightness
+
+    rgbw = kwargs.get(ATTR_RGBW_COLOR)
+    if rgbw != None:
+      self._rgb = rgbw[0:3]
+      self._w = rgbw[3]
+
+    self.update_beken_lamp()
 
   def turn_off(self, **kwargs):
     self._on = False
+    self.update_beken_lamp()
+
+  def update_beken_lamp(self):
+    r = int(self._on) * self._rgb[0]
+    g = int(self._on) * self._rgb[1]
+    b = int(self._on) * self._rgb[2]
+    l = int(self._on) * self._w
+    self._connection.send(BEKEN_CHARACTERISTIC_LAMP, makemsg(r, g, b, l))
+

@@ -4,6 +4,9 @@ import threading
 import time
 import sys
 
+BEKEN_CHARACTERISTIC_NULL = 0x0001
+BEKEN_CHARACTERISTIC_LAMP = 0x002a
+
 def makemsg(r, g, b, l=0):
   return bytes([
     int(g > 0), g,
@@ -21,7 +24,7 @@ class BekenConnection:
 
   def keep_alive(self):
     while True:
-      self.send(0x0001, bytes(10))
+      self.send(BEKEN_CHARACTERISTIC_NULL, bytes(10))
       time.sleep(10)
 
   def send(self, characteristic, message):
@@ -53,6 +56,6 @@ if __name__ == "__main__":
   def user_input():
     for line in sys.stdin:
       r, g, b, l = [ int(x, 16) for x in [ line.strip()[i:i+2] for i in range(0, 8, 2) ] ]
-      con.send(0x002a, makemsg(r, g, b, l))
+      con.send(BEKEN_CHARACTERISTIC_LAMP, makemsg(r, g, b, l))
   threading.Thread(target=user_input).start()
 
