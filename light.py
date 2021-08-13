@@ -90,9 +90,9 @@ class BekenLight(LightEntity):
     self.update_beken_lamp()
 
   def update_beken_lamp(self):
-    r = int(self._on) * self._rgb[0]
-    g = int(self._on) * self._rgb[1]
-    b = int(self._on) * self._rgb[2]
-    l = int(self._on) * self._w
+    r = int( int(self._on) * self._rgb[0] * ( self._brightness / 255 ) )
+    g = int( int(self._on) * self._rgb[1] * ( self._brightness / 255 ) )
+    b = int( int(self._on) * self._rgb[2] * ( self._brightness / 255 ) )
+    l = int( int(self._on) * self._w      * ( self._brightness / 255 ) )
     self._connection.send(BEKEN_CHARACTERISTIC_LAMP, makemsg(r, g, b, l))
 
