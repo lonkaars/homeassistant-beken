@@ -1,13 +1,16 @@
-# homebridge-beken
+# homeassistant-beken
 
-> NOTE: requires python3
->
-> This plugin uses child_process to spawn a python script that does the actual
-> communication with the bulb using the bluepy library. Bluepy uses a binary
-> called bluepy-helper which should be run as root or given permission to
-> directly talk to the bluetooth stack.
+this used to be a homebridge plugin, but i switched from using homebridge to
+homeassistant because homeassistant has way more functionality. you can still
+get the homebridge plugin from
+[npm](https://www.npmjs.com/package/homebridge-beken) or by running `sudo npm i
+-g homebridge-beken`, and the code for that plugin is in the releases section
+on this repo, though i don't intend on updating it anymore.
 
-- a simple homebridge plugin that allows the control of a bulb that goes by
+> installation *should* work with hacs, though i just `git clone` it into my
+> `custom_components` directory because homeassistant is already janky.
+
+- a simple homeassistant plugin that allows the control of a bulb that goes by
 	many names:
 	- Shada Led's light
 	- iLedBulb

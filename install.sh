@@ -1,7 +1,4 @@
 #!/bin/sh
-
-npm run build
-
 rm -rf venv
-npm run python
-sudo npm run perms
+python3 -m venv venv && venv/bin/pip3 install -r requirements.txt
+sudo setcap 'cap_net_raw,cap_net_admin+eip' venv/lib/python3.9/site-packages/bluepy/bluepy-helper
