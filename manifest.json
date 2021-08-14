@@ -1,8 +1,8 @@
 {
   "domain": "beken",
   "name": "Beken",
-  "documentation": "https://github.com/lonkaars/homebridge-beken",
-  "issue_tracker": "https://github.com/lonkaars/homebridge-beken",
+  "documentation": "https://github.com/lonkaars/homeassistant-beken",
+  "issue_tracker": "https://github.com/lonkaars/homeassistant-beken",
   "codeowners": [ "@lonkaars" ],
   "version": "0.2.0",
   "requirements": [],
