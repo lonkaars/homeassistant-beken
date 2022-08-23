@@ -41,7 +41,7 @@ class BekenLight(LightEntity):
     self._rgb = (255, 255, 255)
     self._w = 255
     self._connection = BekenConnection(self._address)
-    self._connection.start_processs()
+    self._connection.start_threads()
     self._process = Process()
 
   @property
