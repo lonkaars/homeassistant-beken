@@ -43,6 +43,7 @@ class BekenLight(LightEntity):
     self._connection = BekenConnection(self._address)
     self._connection.start_threads()
     self._process = Process()
+    self._process.start()
 
   @property
   def color_mode(self):
