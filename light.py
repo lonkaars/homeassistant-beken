@@ -1,7 +1,7 @@
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from math import floor
-from threading import Thread
+from multiprocessing import Process
 from homeassistant.const import CONF_MAC
 from .driver import BekenConnection, makemsg, BEKEN_CHARACTERISTIC_LAMP
 from homeassistant.components.light import (
@@ -41,8 +41,8 @@ class BekenLight(LightEntity):
     self._rgb = (255, 255, 255)
     self._w = 255
     self._connection = BekenConnection(self._address)
-    self._connection.start_threads()
-    self._transitioning = False
+    self._connection.start_processs()
+    self._process = Process()
 
   @property
   def color_mode(self):
@@ -94,7 +94,6 @@ class BekenLight(LightEntity):
 
     transition = kwargs.get(ATTR_TRANSITION)
     if transition != None:
-      self._transitioning = False
       self.interpolate(brightness_old if on_old else 0, self._brightness, rgb_old if on_old else (0, 0, 0,), self._rgb, w_old if on_old else 0, self._w, transition)
 
     self.update_beken_lamp()
@@ -104,11 +103,11 @@ class BekenLight(LightEntity):
     self.update_beken_lamp()
 
   def interpolate(self, brightness_old, brightness, rgb_old, rgb, w_old, w, transition):
-    thread = Thread(target=self.interpolate_thread, args=(brightness_old, brightness, rgb_old, rgb, w_old, w, transition, ))
-    thread.start()
-    self._transitioning = True
+    self._process.terminate()
+    self._process = Process(target=self.interpolate_process, args=(brightness_old, brightness, rgb_old, rgb, w_old, w, transition, ))
+    self._process.start()
 
-  def interpolate_thread(self, brightness_old, brightness, rgb_old, rgb, w_old, w, transition):
+  def interpolate_process(self, brightness_old, brightness, rgb_old, rgb, w_old, w, transition):
     step_duration = 0.250
     steps = int(transition / step_duration)
     if rgb_old == None: rgb_old = (0, 0, 0,)
@@ -118,7 +117,6 @@ class BekenLight(LightEntity):
     if w_old == None: w_old = 0
     if w == None: w = 0
     for x in range(steps):
-        if not self._transitioning: break
         weight = x / steps
         r = rgb_old[0] * (1 - weight) + rgb[0] * weight
         g = rgb_old[1] * (1 - weight) + rgb[1] * weight
@@ -128,7 +126,6 @@ class BekenLight(LightEntity):
         self._brightness = brightness_old * (1 - weight) + brightness * weight
         self.update_beken_lamp()
         sleep(step_duration)
-    self._transitioning = False
 
   def update_beken_lamp(self):
     r = int( int(self._on) * self._rgb[0] * ( self._brightness / 255 ) )
