@@ -94,6 +94,7 @@ class BekenLight(LightEntity):
 
     transition = kwargs.get(ATTR_TRANSITION)
     if transition != None:
+      self._transitioning = False
       self.interpolate(brightness_old if on_old else 0, self._brightness, rgb_old if on_old else (0, 0, 0,), self._rgb, w_old if on_old else 0, self._w, transition)
 
     self.update_beken_lamp()
@@ -103,9 +104,9 @@ class BekenLight(LightEntity):
     self.update_beken_lamp()
 
   def interpolate(self, brightness_old, brightness, rgb_old, rgb, w_old, w, transition):
-    self._transitioning = True
     thread = Thread(target=self.interpolate_thread, args=(brightness_old, brightness, rgb_old, rgb, w_old, w, transition, ))
     thread.start()
+    self._transitioning = True
 
   def interpolate_thread(self, brightness_old, brightness, rgb_old, rgb, w_old, w, transition):
     step_duration = 0.250
