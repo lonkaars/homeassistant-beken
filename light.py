@@ -7,17 +7,14 @@ from .driver import BekenConnection, makemsg, BEKEN_CHARACTERISTIC_LAMP
 from homeassistant.components.light import (
   LightEntity,
 
-  SUPPORT_BRIGHTNESS,
-  SUPPORT_COLOR,
-  SUPPORT_WHITE_VALUE,
-  SUPPORT_TRANSITION,
-
   ATTR_BRIGHTNESS,
   ATTR_RGBW_COLOR,
   ATTR_TRANSITION,
 
-  COLOR_MODE_RGBW,
-  PLATFORM_SCHEMA
+  PLATFORM_SCHEMA,
+
+  LightEntityFeature,
+  ColorMode,
 )
 from time import sleep
 
@@ -25,9 +22,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
   vol.Required("name"): cv.string,
   vol.Required("address"): cv.string
 })
-
-SUPPORT_FEATURES_RGB = SUPPORT_BRIGHTNESS | SUPPORT_COLOR
-SUPPORT_FEATURES_WHITE = SUPPORT_BRIGHTNESS
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
   add_entities([ BekenLight(name=config["name"], address=config["address"]) ])
@@ -48,15 +42,15 @@ class BekenLight(LightEntity):
 
   @property
   def color_mode(self):
-    return COLOR_MODE_RGBW
+    return ColorMode.RGBW
 
   @property
   def supported_color_modes(self):
-    return set([ COLOR_MODE_RGBW ])
+    return set([ ColorMode.RGBW ])
 
   @property
   def supported_features(self):
-    return SUPPORT_BRIGHTNESS | SUPPORT_COLOR | SUPPORT_WHITE_VALUE | SUPPORT_TRANSITION
+    return LightEntityFeature.TRANSITION
 
   @property
   def unique_id(self):
