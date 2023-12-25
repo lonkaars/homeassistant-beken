@@ -1,4 +1,5 @@
 {
-	"name": "Beken",
-	"content_in_root": true
+	"name": "beken",
+	"zip_release": false,
+	"render_readme": true
 }
