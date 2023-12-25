@@ -8,8 +8,19 @@
 - [here's](https://wiki.fhem.de/wiki/BEKEN_iLedBlub) the bluetooth protocol
 	definition.
 - sort of stable
-- does require manual bluetooth pairing using `bluetoothctl` (or similar) on
-  the device running homeassistant
+
+## configuration
+
+1. Pair the lamp using `bluetoothctl` (or similar) on the device running
+   homeassistant
+2. Add to configuration.yaml (address is the bluetooth mac address which is
+   shown in `bluetoothctl`):
+   ```yaml
+   light:
+     - platform: beken
+       name: "human readable name"
+       address: "XX:XX:XX:XX:XX:XX"
+   ```
 
 > The following command was in a separate file, I don't remember if it was a
 > temporary fix or is still required: `sudo setcap
